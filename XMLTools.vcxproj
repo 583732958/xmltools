@@ -309,6 +309,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AboutBoxDlg.cpp" />
+    <ClCompile Include="core.cpp" />
     <ClCompile Include="DebugDlg.cpp" />
     <ClCompile Include="LoadLibrary.cpp" />
     <ClCompile Include="OptionsDlg.cpp" />
