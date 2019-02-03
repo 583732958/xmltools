@@ -5,7 +5,7 @@
 
 __declspec(dllexport)
 void prettyPrint(bool autoindenttext, bool addlinebreaks, std::string &str) {	   	 
-	   	  
+
 	// count the < and > signs; > are ignored if tagsignlevel <= 0. This prevent indent errors if text or attributes contain > sign.
 	int tagsignlevel = 0;
 	// some state variables

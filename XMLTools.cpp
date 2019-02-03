@@ -79,9 +79,9 @@ const wchar_t localConfFile[] = L"doLocalConf.xml";
 
 // The number of functionality
 #ifdef _DEBUG
-  const int TOTAL_FUNCS = 35;
+  const int TOTAL_FUNCS = 36;
 #else
-  const int TOTAL_FUNCS = 34;
+  const int TOTAL_FUNCS = 35;
 #endif
 int nbFunc = TOTAL_FUNCS;
 
@@ -187,6 +187,8 @@ void debugDlg();
 int performXMLCheck(int informIfNoError);
 void initializePlugin();
 void savePluginParams();
+
+void myPretty();
 
 unsigned long getFlags() {
   unsigned long res = 0;
@@ -480,6 +482,11 @@ void initializePlugin() {
     funcItem[menuentry]._pFunc = uncommentSelection;
     ++menuentry;
 
+	Report::strcpy(funcItem[menuentry]._itemName, L"myPretty");
+	registerShortcut(funcItem + menuentry, false, true, false, 'P');
+	funcItem[menuentry]._pFunc = myPretty;
+	++menuentry;
+
     funcItem[menuentry++]._pFunc = NULL;  //----------------------------------------
 
     Report::strcpy(funcItem[menuentry]._itemName, L"Options...");
@@ -661,16 +668,6 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode) {
       ::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, notifyCode->nmhdr.idFrom, reinterpret_cast<LPARAM>(filename));
       dbg("  bufferID: "); dbgln(std::to_string(static_cast<unsigned long long>(notifyCode->nmhdr.idFrom)).c_str());
       dbg("  filename: "); dbgln(filename);
-	  {
-		  LangType docType = L_EXTERNAL;
-		  ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, (LPARAM)&docType);
-		  if (docType == L_XML
-			  && _tcsicmp(PathFindExtension(filename), L".xml") == 0)
-		  {
-			  prettyPrintXMLBreaks();
-			  prettyPrintAttributes();
-		  }
-	  }
       break;
     case NPPN_BUFFERACTIVATED: {
       dbgln("NPP Event: NPPN_BUFFERACTIVATED");
@@ -2653,6 +2650,12 @@ void uncommentSelection() {
   //::SendMessage(hCurrentEditView, SCI_SETXOFFSET, xOffset, 0);
 
   str.clear();
+}
+
+void myPretty()
+{
+	prettyPrintXMLBreaks();
+	prettyPrintAttributes();
 }
 
 /////////////////////////////////////////////////////////////////////////////

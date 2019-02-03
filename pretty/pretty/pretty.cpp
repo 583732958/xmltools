@@ -9,10 +9,10 @@
 #include <iostream>
 #include <fstream>
 
-extern "C" __declspec(dllimport)
+__declspec(dllimport)
 void prettyPrint(bool autoindenttext, bool addlinebreaks, std::string &str);
 
-extern "C" __declspec(dllimport)
+__declspec(dllimport)
 void prettyPrintAttributes(std::string &str);
 
 #pragma comment ( lib, "../../debug/XMLTools.lib" )
@@ -78,7 +78,7 @@ BOOL CPrettyApp::InitInstance()
 			prettyPrintAttributes(str);
 
 			in.close();
-			std::ofstream out(cmdline, std::ios::trunc);
+			std::ofstream out(cmdline, std::ios::trunc | std::ios::binary);
 			if (out.is_open())
 			{
 				out << str;
