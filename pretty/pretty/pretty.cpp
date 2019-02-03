@@ -74,13 +74,13 @@ BOOL CPrettyApp::InitInstance()
 			std::istreambuf_iterator<char> beg(in), end;
 			std::string str(beg, end);
 
-			LPCSTR buff = prettyPrint(false, true, str);
+			LPSTR buff = (LPSTR)prettyPrint(false, true, str);
 			str = buff;
-			delete buff;
+			free (buff);
 
-			buff = prettyPrintAttributes(str);
+			buff = (LPSTR)prettyPrintAttributes(str);
 			str = buff;
-			delete buff;
+			free (buff);
 
 			in.close();
 			std::ofstream out(cmdline, std::ios::trunc | std::ios::binary);
