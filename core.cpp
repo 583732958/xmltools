@@ -4,8 +4,8 @@
 #include "Report.h"
 
 __declspec(dllexport)
-void prettyPrint(bool autoindenttext, bool addlinebreaks, std::string &str) {	   	 
-
+LPCSTR prettyPrint(bool autoindenttext, bool addlinebreaks, const std::string &str_in) {	   	 
+	std::string str = str_in;
 	// count the < and > signs; > are ignored if tagsignlevel <= 0. This prevent indent errors if text or attributes contain > sign.
 	int tagsignlevel = 0;
 	// some state variables
@@ -275,11 +275,14 @@ void prettyPrint(bool autoindenttext, bool addlinebreaks, std::string &str) {
 			++curpos;
 		}
 	}
+	LPSTR buff = (LPSTR)malloc(str.size() + 1);
+	strcpy(buff, str.c_str());
+	return buff;
 }
 
 __declspec(dllexport)
-void prettyPrintAttributes(std::string &str) {
-
+LPCSTR prettyPrintAttributes(const std::string &str_in) {
+	std::string str = str_in;
 	const int tabwidth = 4;
 	const int usetabs = 1;
 
@@ -364,4 +367,7 @@ void prettyPrintAttributes(std::string &str) {
 			++curpos;
 		}
 	}
+	LPSTR buff = (LPSTR)malloc(str.size() + 1);
+	strcpy(buff, str.c_str());
+	return buff;
 }
