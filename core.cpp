@@ -275,7 +275,7 @@ LPCSTR prettyPrint(bool autoindenttext, bool addlinebreaks, const std::string &s
 			++curpos;
 		}
 	}
-	LPSTR buff = (LPSTR)malloc(str.size() + 1);
+	LPSTR buff = (LPSTR)HeapAlloc(GetProcessHeap(), 0, str.size() + 1);
 	strcpy(buff, str.c_str());
 	return buff;
 }
@@ -367,7 +367,7 @@ LPCSTR prettyPrintAttributes(const std::string &str_in) {
 			++curpos;
 		}
 	}
-	LPSTR buff = (LPSTR)malloc(str.size() + 1);
+	LPSTR buff = (LPSTR)HeapAlloc(GetProcessHeap(), 0, str.size() + 1);
 	strcpy(buff, str.c_str());
 	return buff;
 }

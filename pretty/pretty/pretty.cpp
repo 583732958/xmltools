@@ -14,8 +14,11 @@ LPCSTR prettyPrint(bool autoindenttext, bool addlinebreaks, const std::string &s
 
 __declspec(dllimport)
 LPCSTR prettyPrintAttributes(const std::string &str);
-
+#ifdef _DEBUG
 #pragma comment ( lib, "../../debug/XMLTools.lib" )
+#else
+#pragma comment ( lib, "../../release/XMLTools.lib" )
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,11 +79,11 @@ BOOL CPrettyApp::InitInstance()
 
 			LPSTR buff = (LPSTR)prettyPrint(false, true, str);
 			str = buff;
-			free (buff);
+			HeapFree(GetProcessHeap(), 0, buff);
 
 			buff = (LPSTR)prettyPrintAttributes(str);
 			str = buff;
-			free (buff);
+			HeapFree(GetProcessHeap(), 0, buff);
 
 			in.close();
 			std::ofstream out(cmdline, std::ios::trunc | std::ios::binary);
