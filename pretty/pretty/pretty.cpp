@@ -14,6 +14,10 @@ LPCSTR prettyPrint(bool autoindenttext, bool addlinebreaks, const std::string &s
 
 __declspec(dllimport)
 LPCSTR prettyPrintAttributes(const std::string &str);
+
+__declspec(dllexport)
+void pretty(const std::string &strPath);
+
 #ifdef _DEBUG
 #pragma comment ( lib, "../../debug/XMLTools.lib" )
 #else
@@ -69,31 +73,9 @@ BOOL CPrettyApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 	LPCTSTR cmdline = AfxGetApp()->m_lpCmdLine;
-	if (0 == _tcsicmp(PathFindExtension(cmdline), L".xml"))
-	{
-		std::ifstream in(cmdline);
-		if (in.is_open())
-		{
-			std::istreambuf_iterator<char> beg(in), end;
-			std::string str(beg, end);
+	USES_CONVERSION;
+	pretty(W2A(cmdline));
 
-			LPSTR buff = (LPSTR)prettyPrint(false, true, str);
-			str = buff;
-			HeapFree(GetProcessHeap(), 0, buff);
-
-			buff = (LPSTR)prettyPrintAttributes(str);
-			str = buff;
-			HeapFree(GetProcessHeap(), 0, buff);
-
-			in.close();
-			std::ofstream out(cmdline, std::ios::trunc | std::ios::binary);
-			if (out.is_open())
-			{
-				out << str;
-				out.close();
-			}
-		}
-	}
 	return FALSE;
 
 	CprettyDlg dlg;

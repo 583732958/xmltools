@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include <string>
+#include <fstream>
+#include <io.h>
 #include "Scintilla.h"
 #include "Report.h"
 
@@ -370,4 +372,76 @@ LPCSTR prettyPrintAttributes(const std::string &str_in) {
 	LPSTR buff = (LPSTR)HeapAlloc(GetProcessHeap(), 0, str.size() + 1);
 	strcpy(buff, str.c_str());
 	return buff;
+}
+
+__declspec(dllexport)
+void prettyFile(const std::string &strFilePath)
+{
+	if (0 != stricmp(PathFindExtensionA(strFilePath.c_str()), ".xml")
+		&& 0 != stricmp(PathFindExtensionA(strFilePath.c_str()), ".rels"))
+	{
+		return;
+	}
+
+	std::ifstream in(strFilePath.c_str());
+	if (in.is_open())
+	{
+		std::istreambuf_iterator<char> beg(in), end;
+		std::string str(beg, end);
+
+		LPSTR buff = (LPSTR)prettyPrint(false, true, str);
+		str = buff;
+		HeapFree(GetProcessHeap(), 0, buff);
+
+		buff = (LPSTR)prettyPrintAttributes(str);
+		str = buff;
+		HeapFree(GetProcessHeap(), 0, buff);
+
+		in.close();
+		std::ofstream out(strFilePath.c_str(), std::ios::trunc | std::ios::binary);
+		if (out.is_open())
+		{
+			out << str;
+			out.close();
+		}
+	}
+}
+
+__declspec(dllexport)
+void prettyFolder(const std::string &strFolder)
+{
+	_finddata_t fileinfo;
+	std::string strFind = strFolder + "\\*";
+	intptr_t handle = _findfirst(strFind.c_str(), &fileinfo);
+	if (handle == -1L)
+		return;
+
+	do 
+	{
+		if (fileinfo.attrib & _A_SUBDIR)
+		{
+			if ((strcmp(fileinfo.name,".")!=0) && (strcmp(fileinfo.name,"..")!=0))
+			{
+				std::string newpath = strFolder + "\\" + fileinfo.name;
+				prettyFolder(newpath);
+			}
+		}
+		else
+		{
+			prettyFile(strFolder + "\\" + fileinfo.name);
+		}
+	} while (_findnext(handle, &fileinfo)==0);
+	_findclose(handle);
+}
+
+__declspec(dllexport)
+void pretty(const std::string &strPath)
+{
+	DWORD dwAttr = GetFileAttributesA(strPath.c_str());
+	if (dwAttr == 0xFFFFFFFF)
+		;
+	else if (dwAttr & FILE_ATTRIBUTE_DIRECTORY)
+		prettyFolder(strPath);
+	else
+		prettyFile(strPath);
 }
