@@ -668,6 +668,13 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode) {
       ::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, notifyCode->nmhdr.idFrom, reinterpret_cast<LPARAM>(filename));
       dbg("  bufferID: "); dbgln(std::to_string(static_cast<unsigned long long>(notifyCode->nmhdr.idFrom)).c_str());
       dbg("  filename: "); dbgln(filename);
+	  {
+		  ::SendMessage(nppData._nppHandle, NPPM_SWITCHTOFILE, 0, reinterpret_cast<LPARAM>(filename));
+		  LangType docType = L_EXTERNAL;
+		  ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, (LPARAM)&docType);
+		  if(docType == L_XML)
+			myPretty();
+	  }
       break;
     case NPPN_BUFFERACTIVATED: {
       dbgln("NPP Event: NPPN_BUFFERACTIVATED");
